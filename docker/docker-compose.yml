@@ -1,27 +1,30 @@
 version: "3.3"
 services:
-#  ssl:
-#image: vishnunair/docker-mkcert
-#volumes:
-#- wortixcerts:/root/.local/share/mkcert
+  ssl:
+    image: vishnunair/docker-mkcert
+    volumes:
+      - certs:/root/.local/share/mkcert
   nginx:
     image: "nginx:1.21"
     volumes:
       - ./../:/var/www/html
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - wortixcerts:/root/certs
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - certs:/root/certs
     ports:
       - "${NGINX_PORT}:80"
+      - "443:443"
+      - "9090:9090"
     networks:
-      - wortixnet
+      - chatnet
   php:
     build: php
-    ports:
-      - "${WEBSOCKET_PORT}:${WEBSOCKET_PORT}"
+    expose:
+      - 9090
     volumes:
       - ./../:/var/www/html
     networks:
-      - wortixnet
+      - chatnet
   mysql:
     image: "mysql:8.0"
     command: --default-authentication-plugin=mysql_native_password
@@ -35,9 +38,9 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     networks:
-      - wortixnet
+      - chatnet
 networks:
-  wortixnet:
+  chatnet:
 volumes:
   wortixmysql:
-  wortixcerts:
+  certs:
