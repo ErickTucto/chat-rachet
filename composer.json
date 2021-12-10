@@ -14,5 +14,14 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {}
+    "require": {
+        "cboden/ratchet": "dev-master",
+        "twig/twig": "^3.0",
+        "bramus/router": "~1.6",
+        "filp/whoops": "^2.14"
+    },
+    "scripts": {
+        "ratchet": "@php index.php",
+        "views:clear": "rm -Rf storage/cache/views"
+    }
 }

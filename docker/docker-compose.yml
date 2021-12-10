@@ -1,9 +1,9 @@
 version: "3.3"
 services:
-  ssl:
-    image: vishnunair/docker-mkcert
-    volumes:
-      - wortixcerts:/root/.local/share/mkcert
+#  ssl:
+#image: vishnunair/docker-mkcert
+#volumes:
+#- wortixcerts:/root/.local/share/mkcert
   nginx:
     image: "nginx:1.21"
     volumes:
@@ -12,13 +12,12 @@ services:
       - wortixcerts:/root/certs
     ports:
       - "${NGINX_PORT}:80"
-      - "443:443"
     networks:
       - wortixnet
   php:
     build: php
     ports:
-      - "9090:9090"
+      - "${WEBSOCKET_PORT}:${WEBSOCKET_PORT}"
     volumes:
       - ./../:/var/www/html
     networks:

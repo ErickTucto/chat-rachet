@@ -1,0 +1,98 @@
+{% extends "layouts/app.twig" %}
+{% block css %}
+  <style>
+    .card {
+      max-width: 640px;
+      min-height: 360px;
+      min-height: 640px;
+    }
+    .alert {
+      max-width: 300px;
+    }
+    .alert {
+      text-align: left;
+    }
+    .mensaje-any {
+      justify-content: flex-start;
+    }
+    .mensaje-me {
+      justify-content: flex-end;
+    }
+    .mensaje-any .alert {
+      flex: 1;
+    }
+    .mensaje-me .alert {
+      flex: 1;
+    }
+  </style>
+{% endblock %}
+{% block content %}
+  <div class="container mt-4">
+    <div class="row justify-content-center">
+      <div class="col-10">
+        <div class="card text-center">
+          <div id="body" class="card-body">
+          </div>
+          <div class="card-footer text-muted">
+            <form id="form">
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Escribe un mensaje"
+                  id="mensaje"
+                  name="mensaje"
+                  required
+                />
+                <button
+                  class="btn btn-success"
+                  type="submit"
+                >Enviar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block script %}
+  <script>
+    (() => {
+      const conn = new WebSocket('ws:localhost:9090');
+      conn.onopen = function(e) {
+        console.log("Connection established!");
+      };
+
+      conn.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const $div = document.createElement("div")
+        $div.classList.add("d-flex")
+        $div.classList.add("mensaje-any")
+        $div.innerHTML = `<div class="alert alert-warning">
+          ${data.mensaje}
+        </div>
+        `
+        document.querySelector("#body").appendChild($div);
+      };
+      const $form = document.querySelector("#form");
+      $form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const mensaje = $form.mensaje.value
+        if (mensaje.trim()) {
+          const $div = document.createElement("div")
+          $div.classList.add("d-flex")
+          $div.classList.add("mensaje-me")
+          $div.innerHTML = `<div class="alert alert-success">
+            ${mensaje.trim()}
+          </div>
+          `
+          document.querySelector("#body").appendChild($div);
+          conn.send(JSON.stringify({ mensaje: mensaje.trim() }))
+          $form.mensaje.value = "";
+        }
+      })
+    })()
+  </script>
+{% endblock %}
+
